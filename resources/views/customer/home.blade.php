@@ -111,7 +111,7 @@
                                             <div class="product">
                                                 <form action="{{url('cart/add')}}" method="POST">
                                                     <div class="product-img">
-                                                        @if (file_exists(public_path().'/upload/product/'.$product->product_image) !== '')
+                                                        @if (is_file(public_path().'/upload/product/'.$product->product_image))
                                                             <img src="{{ asset('upload/product') }}/{{ $product->product_image }}" class="img-responsive" alt="">
                                                         @else
                                                             <img src="{{ asset('upload/product/image-not-found.png') }}" class="img-responsive" alt="">

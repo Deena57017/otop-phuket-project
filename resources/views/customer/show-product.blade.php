@@ -27,7 +27,7 @@
             <form action="{{url('cart/add')}}" method="POST">
                 <div class="col-md-6 ">
                     <div class="product-preview">
-                        @if (file_exists(public_path().'/upload/product/'.$product->product_image) !== '')
+                        @if (is_file(public_path().'/upload/product/'.$product->product_image))
                             <img src="{{ asset('upload/product') }}/{{ $product->product_image }}" style="width: 80%; margin-left: 10%;" class="img-responsive" alt="">
                         @else
                             <img src="{{ asset('upload/product/image-not-found.png') }}" style="width: 80%; margin-left: 10%;" class="img-responsive" alt="">

@@ -22,8 +22,8 @@ class PaypalController extends Controller {
     const AUTH_API_ENDPOINT_SANDBOX = 'https://api.sandbox.paypal.com/v1/oauth2/token';
     const PAYMENT_API_ENDPOINT_SANDBOX = 'https://api.sandbox.paypal.com/v1/payments/payment';
     const PAYMENT_STATUS = 'approved';
-//    const BASE_URL = 'http://cd257455.ngrok.io';
-    const BASE_URL = 'http://127.0.0.1:8000/';
+    const BASE_URL = 'http://c21cab7b.ngrok.io/';
+    // const BASE_URL = 'http://127.0.0.1:8000/';
     private $carts, $paymentPending;
 
     public function __construct() {
