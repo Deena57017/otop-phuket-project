@@ -19,8 +19,8 @@ class OrderController extends Controller {
     const LIMIT_OUT_OF_STOCK = 5;
     const LINE_API = 'https://notify-api.line.me/api/notify';
     const LINE_ACCESS_TOKEN = 'ol3uZkhmmuyBgB6Fz58thOc9t5m0OwDqeO23VoMZbDO';
-    const BASE_URL = 'http://c21cab7b.ngrok.io/';
-    // const BASE_URL = 'http://127.0.0.1:8000/';
+    // const BASE_URL = 'http://c21cab7b.ngrok.io/';
+    const BASE_URL = 'http://127.0.0.1:8000/';
     const TIME_END = '+2 minute';
 
     private $carts;
