@@ -19,8 +19,9 @@ class OrderController extends Controller {
     const LIMIT_OUT_OF_STOCK = 5;
     const LINE_API = 'https://notify-api.line.me/api/notify';
     const LINE_ACCESS_TOKEN = 'ol3uZkhmmuyBgB6Fz58thOc9t5m0OwDqeO23VoMZbDO';
-    // const BASE_URL = 'http://c21cab7b.ngrok.io/';
-    const BASE_URL = 'http://127.0.0.1:8000/';
+//    const BASE_URL = 'http://cd257455.ngrok.io';
+     const BASE_URL = 'http://127.0.0.1:8000/';
+//    const BASE_URL = 'https://ns1248.hostsevenplus.com/~otopphuk/';
     const TIME_END = '+2 minute';
 
     private $carts;
@@ -99,6 +100,7 @@ class OrderController extends Controller {
         }
 
         $payments = Payment::where('user_id', Auth::id())
+                           ->where('payment_status', Payment::PAYMENT_PENDING)
                            ->orderBy('payments.payment_id', 'desc')
                            ->paginate($NUM_PAGE);
 
@@ -108,6 +110,73 @@ class OrderController extends Controller {
                                           ->with('paymentPendingTime', $paymentPendingTime)
                                           ->with('NUM_PAGE' ,$NUM_PAGE);
     }
+
+    public function orderHistory (Request $request) {
+        if (Auth::id() !== null) {
+            $this->getPaymentPending(Auth::id());
+            $this->carts->getCart(Auth::id());
+        }
+
+        $NUM_PAGE = 6;
+        $page = $request->input('page');
+        $page = ($page != null) ? $page : 1;
+
+        $paymentDetails = DB::table('order_details')->join('payments', 'payments.order_id', '=', 'order_details.order_id')
+            ->join('products', 'products.product_id', '=', 'order_details.product_id')
+            ->where('payments.user_id', Auth::id())
+            ->get();
+
+        $paymentPendingTime = [];
+
+        foreach ($paymentDetails as $paymentDetail) {
+            if ($paymentDetail->payment_status === Payment::PAYMENT_PENDING) {
+                $timeAddHour = date('Y-m-d H:i:s', strtotime(self::TIME_END, strtotime($paymentDetail->payment_date)));
+                $paymentPendingTime[$paymentDetail->payment_id] = [
+                    'payment_id' => $paymentDetail->payment_id,
+                    'date' => $timeAddHour
+                ];
+            } else {
+                $paymentPendingTime[$paymentDetail->payment_id] = null;
+            }
+        }
+
+        $currentTime = Carbon::now();
+        $paymentIds = [];
+        foreach ($paymentPendingTime as $pendingTime) {
+            if ($pendingTime['date'] !== null) {
+                if (strtotime($currentTime) >= strtotime($pendingTime['date'])) {
+                    $paymentIds[] = $pendingTime['payment_id'];
+                }
+            }
+        }
+
+        foreach ($paymentIds as $payId) {
+            $paymentData = Payment::findOrFail($payId);
+            $orderDetails = OrderDetail::where('order_id', $paymentData->order_id)
+                ->get();
+
+            foreach ($orderDetails as $orderDetail) {
+                $product = Product::findOrFail($orderDetail->product_id);
+
+                $product->update([
+                    'product_quantity' => $product->product_quantity + $orderDetail->order_detail_quantity,
+                ]);
+            }
+            Payment::destroy($payId);
+        }
+
+        $payments = Payment::where('user_id', Auth::id())
+            ->where('payment_status', Payment::PAYMENT_PAID)
+            ->orderBy('payments.payment_id', 'desc')
+            ->paginate($NUM_PAGE);
+
+        return view('customer.order-history')->with('payments', $payments)
+                                                  ->with('paymentDetails', $paymentDetails)
+                                                  ->with('page', $page)
+                                                  ->with('paymentPendingTime', $paymentPendingTime)
+                                                  ->with('NUM_PAGE' ,$NUM_PAGE);
+    }
+
 
     public function checkout() {
         $currentTime = Carbon::now();

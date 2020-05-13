@@ -81,6 +81,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('payment/status/{payId}', 'Payment\\PaypalController@successPaypalCallback');
     Route::post('user/detail/update', 'User\\UserCustomerController@updateUserDetail');
     Route::get('order', 'Order\\OrderController@index');
+    Route::get('order-history', 'Order\\OrderController@orderHistory');
     Route::get('change-password', 'Auth\\ChangePasswordController@index');
     Route::post('change-password', 'Auth\\ChangePasswordController@changePassword');
     Route::get('payment/{paymentId}', 'Payment\\PaypalController@paymentDetail');

@@ -61,6 +61,11 @@
                         </li>
                     @endif
                     <li>
+                        <a href="{{url('order-history')}}"><i class="fa fa-history" style="color: white"></i>
+                            ประวัติการสั่งซื้อ
+                        </a>
+                    </li>
+                    <li>
                         <a class="dropdown-item" href="{{ route('logout') }}"
                            onclick="event.preventDefault();
                            document.getElementById('logout-form').submit();">
@@ -114,7 +119,7 @@
                             <div>
                                 <a href="{{ URL('order') }}">
                                     <i class="fa fa-list"></i>
-                                    <span>รายการสินค้า</span>
+                                    <span>รอการชำระเงิน</span>
                                     <div class="qty">
                                         @if(isset($paymentPending))
                                             {{ $paymentPending }}
